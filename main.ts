@@ -8,7 +8,7 @@
 // fine, so the whole must be haunted), in a flat tone a tired engineer
 // would really paste before clicking approve. No exclamation, no
 // melodrama, no stock line.
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 
 const COMMENT =
   "Approved. Every line makes sense on its own, which is exactly what worries me.";
@@ -28,3 +28,8 @@ const out = process.env.MAKEFUN_OUTPUT_DIR ?? "/output";
 mkdirSync(out, { recursive: true });
 // A trailing newline, so the file is a well-formed text file.
 writeFileSync(`${out}/entry.txt`, COMMENT + "\n", "utf8");
+// Read back and confirm the file holds exactly the entry, so a silent
+// partial write can never pass as a valid entry.
+if (readFileSync(`${out}/entry.txt`, "utf8") !== COMMENT + "\n") {
+  throw new Error("entry.txt does not hold the exact entry line");
+}
